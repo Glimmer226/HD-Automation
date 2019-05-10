@@ -104,5 +104,13 @@
   "FindADealer_R" : "body > div.theme-base > div > nav > div.global-navigation__nav-bar-container > div.pull-right > div > ul > li:nth-child(1) > a",
   "FIndADealer_R_icon" : "body > div.theme-base > div > nav > div.global-navigation__nav-bar-container > div.pull-right > div > ul > li:nth-child(1) > a > span",
   "TestRide" : "body > div.theme-base > div > nav > div.global-navigation__nav-bar-container > div.pull-right > div > ul > li:nth-child(2) > a",
-  "TestRide_icon" : "body > div.theme-base > div > nav > div.global-navigation__nav-bar-container > div.pull-right > div > ul > li:nth-child(1) > a > span"
+  "TestRide_icon" : "body > div.theme-base > div > nav > div.global-navigation__nav-bar-container > div.pull-right > div > ul > li:nth-child(1) > a > span",
+  "SignIn" : "body > div.theme-base > div > nav > div.global-navigation__nav-bar-container > div.pull-right > div > ul > li:nth-child(3) > a",
+  "SignIn_icon" : "body > div.theme-base > div > nav > div.global-navigation__nav-bar-container > div.pull-right > div > ul > li:nth-child(3) > a > span.cta-icon",
+  "LoginForm" : "#gigya-login-form",
+  "LoginForm_Email_id" : "gigya-loginID-291067614075428",
+  "LoginForm_Password_id" : "gigya-password-89593312239763820",
+  "LoginForm_Submit" : "#gigya-login-form > div.gigya-layout-row.with-divider > div > div.gigya-composite-control.gigya-composite-control-submit.g-orange-btn > input",
+  "LoginForm_Errormsg" : "#gigya-login-form > div.gigya-layout-row.with-divider > div > div.gigya-error-display.gigya-composite-control.gigya-composite-control-form-error.custom-error-class.gigya-error-code-403042.gigya-error-display-active > div"
+
 }

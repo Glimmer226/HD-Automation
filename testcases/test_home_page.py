@@ -3,8 +3,10 @@ import unittest
 from Libs.login import Login
 from selenium import webdriver
 from Libs.get_selector import GetSelector
-from time import sleep
 from utx import *
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.by import By
 
 
 class HomePage(unittest.TestCase):
@@ -20,20 +22,17 @@ class HomePage(unittest.TestCase):
         driver = self.driver
         v = self.v
         a = driver.find_element_by_css_selector(v["LearnToRide"])
-        b = a.get_attribute('textContent')
+        b = a.get_attribute("textContent")
         log.debug("Learn To Ride: %s" % b)
         self.assertEqual("Learn To Ride ", b)
 
         a.click()
-        sleep(5)
+        WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
+                                                                          v["LearnToRide_dropdown"])))
 
-        c = driver.find_element_by_css_selector(v["LearnToRide"]).get_attribute("data-dropdown")
-        log.debug("Learn To Ride drop down: %s" % c)
-        self.assertEqual("learn-to-ride-dropdown", c)
-
-        d = driver.find_element_by_css_selector(v["LearnToRide_dropdown"]).get_attribute("style")
-        log.debug("Learn To Ride style: %s" % d)
-        self.assertIn("display: block", d)
+        c = driver.find_element_by_css_selector(v["LearnToRide_dropdown"]).get_attribute("style")
+        log.debug("Learn To Ride style: %s" % c)
+        self.assertIn("display: block", c)
 
     def test_NewToRiding(self):
         driver = self.driver
@@ -72,7 +71,7 @@ class HomePage(unittest.TestCase):
         self.assertEqual("Explore ", b)
 
         a.click()
-        sleep(3)
+        WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.CSS_SELECTOR, v["Explore_dropdown"])))
 
         c = driver.find_element_by_css_selector(v["Explore_dropdown"]).get_attribute("style")
         log.debug("Explore style: %s" % c)
@@ -250,12 +249,8 @@ class HomePage(unittest.TestCase):
         log.debug("Owners: %s" % b)
         self.assertEqual("Owners ", b)
 
-        c = driver.find_element_by_css_selector(v["Owners"]).get_attribute("data-dropdown")
-        log.debug("Owners class drop down: %s" % c)
-        self.assertIn("owners-dropdown", c)
-
         a.click()
-        sleep(3)
+        WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.CSS_SELECTOR, v["Owners_dropdown"])))
 
         d = driver.find_element_by_css_selector(v["Owners_dropdown"]).get_attribute("style")
         log.debug("Owners style: %s" % d)
@@ -325,7 +320,7 @@ class HomePage(unittest.TestCase):
         log.debug("Extended Service: %s" % a)
         self.assertEqual("Extended Service", a)
 
-    def text_ProtectionPlans(self):
+    def test_ProtectionPlans(self):
         driver = self.driver
         v = self.v
         a = driver.find_element_by_css_selector(v["ProtectionPlans"]).get_attribute("textContent")
@@ -534,7 +529,10 @@ class HomePage(unittest.TestCase):
 
         b = driver.find_element_by_css_selector(v["Owners"])
         b.click()
-        sleep(3)
+        WebDriverWait(driver, 30).until(ec.invisibility_of_element((By.CSS_SELECTOR, v["Owners_dropdown"])))
+
+        c = driver.find_element_by_css_selector(v["Owners_dropdown"]).get_attribute("style")
+        self.assertIn("display: none", c)
 
     def test_Museum(self):
         driver = self.driver
@@ -577,7 +575,8 @@ class HomePage(unittest.TestCase):
         self.assertIn("Shopping Tools", b)
 
         a.click()
-        sleep(3)
+        WebDriverWait(driver, 30).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
+                                                                          v["ShoppingTools_dropdown"])))
 
         c = driver.find_element_by_css_selector(v["ShoppingTools_dropdown"]).get_attribute("style")
         log.debug("Shopping Tools style: %s" % c)
@@ -701,7 +700,8 @@ class HomePage(unittest.TestCase):
         self.assertIn("Parts & Accessories", b)
 
         a.click()
-        sleep(3)
+        WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
+                                                                          v["PartsAccessories_dropdown"])))
 
         c = driver.find_element_by_css_selector(v["PartsAccessories_dropdown"]).get_attribute("style")
         log.debug("Parts & Accessories style: %s" % c)
@@ -770,7 +770,8 @@ class HomePage(unittest.TestCase):
         self.assertIn("Clothing & Gear", b)
 
         a.click()
-        sleep(3)
+        WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
+                                                                          v["ClothingGear_dropdown"])))
 
         c = driver.find_element_by_css_selector(v["ClothingGear_dropdown"]).get_attribute("style")
         log.debug("Clothing & Gear style: %s" % c)
@@ -856,12 +857,13 @@ class HomePage(unittest.TestCase):
 
         d = driver.find_element_by_css_selector(v["ClothingGear"])
         d.click()
-        sleep(3)
+        WebDriverWait(driver, 30).until(ec.invisibility_of_element((By.CSS_SELECTOR,
+                                                                    v["ClothingGear_dropdown"])))
 
     def test_FindADealer_R(self):
         driver = self.driver
         v = self.v
-        a = driver.find_element_by_css_selector(v["FindADealer_R"]).get_attribute("textContent")
+        a = driver.find_element_by_css_selector(v["FindADealer_R"]).text
         log.debug("Find A Dealer_R: %s" % a)
         self.assertIn("Find A Dealer", a)
 
@@ -872,6 +874,9 @@ class HomePage(unittest.TestCase):
         c = driver.find_element_by_css_selector(v["FindADealer_R"]).get_attribute("target")
         log.debug("Find A Dealer_R target: %s" % c)
         self.assertEqual("_self", c)
+
+        d = driver.find_element_by_css_selector(v["FindADealer_R_icon"]).is_displayed()
+        self.assertIs(d, True)
 
     def test_TestRide(self):
         driver = self.driver
@@ -888,15 +893,34 @@ class HomePage(unittest.TestCase):
         log.debug("TestRide target: %s" % c)
         self.assertEqual("_self", c)
 
+        d = driver.find_element_by_css_selector(v["TestRide_icon"]).is_displayed()
+        self.assertIs(d, True)
+
+    def test_SignIn(self):
+        """登陆界面测试
+        1. 输入错误密码，提示异常
+        2. 登陆成功"""
+        driver = self.driver
+        v = self.v
+        a = driver.find_element_by_css_selector(v["SignIn"])
+
+        b = a.get_attribute("textContent")
+        log.debug("Sign In: %s" % b)
+        self.assertIn("Sign In", b)
+
+        c = driver.find_element_by_css_selector(v["SignIn_icon"]).is_displayed()
+        self.assertIs(c, True)
+
+        a.click()
+        WebDriverWait(driver, 30).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
+                                                                          v["LoginForm"])))
+
     @classmethod
     def tearDownClass(cls):
         cls.driver.quit()
 
 
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    suite.addTest(HomePage("test_NewArrivals"))
-    runner = unittest.TextTestRunner()
-    runner.run(suite)
+    unittest.main()
 
 
