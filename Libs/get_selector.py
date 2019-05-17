@@ -1,5 +1,6 @@
-# encoding = utf-8
+# coding = utf-8
 import json
+import os
 
 
 class GetSelector:
@@ -7,10 +8,13 @@ class GetSelector:
         self.path = path
 
     def get_selector(self):
-        with open(self.path, 'r') as f:
-            results = json.load(f)
-
-        return results
+        path = os.path.isfile(self.path)
+        if path:
+            with open(self.path, 'r') as f:
+                results = json.load(f)
+            return results
+        else:
+            raise EOFError("Input wrong config file")
 
 
 if __name__ == '__main__':

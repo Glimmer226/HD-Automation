@@ -1,8 +1,10 @@
-# encoding = utf-8
+# coding = utf-8
 from selenium import webdriver
 from selenium.webdriver.common.action_chains import ActionChains
 from Libs.get_selector import GetSelector
 from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.common.by import By
 from time import sleep
 
 
@@ -22,10 +24,8 @@ if __name__ == '__main__':
     g = GetSelector("C:\\Users\\glimmer.zhang\\Documents\\Python\\HD Automation\\config\\home_page.json")
     v = g.get_selector()
 
-    a = driver.find_element_by_css_selector(v["FIndADealer_R_icon"]).is_displayed()
-    print(a)
-
-
-
+    a = driver.find_element_by_css_selector(v["Video"])
+    print(a.get_attribute('autoplay'))
+    assert a.get_attribute('autoplay') == 'true'
 
 
