@@ -1,4 +1,4 @@
-# encoding = utf-8
+# coding = utf-8
 import unittest
 from Libs.login import Login
 from selenium import webdriver
@@ -7,6 +7,7 @@ from utx import *
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 class HomePage(unittest.TestCase):
@@ -17,6 +18,12 @@ class HomePage(unittest.TestCase):
         cls.v = cls.s.get_selector()
         cls.driver = webdriver.Chrome()
         cls.browser = Login(cls.driver).login()
+
+    def test_Logo(self):
+        driver = self.driver
+        v = self.v
+        a = driver.find_element_by_css_selector(v["LogoHeader"])
+        self.assertIs(a.is_displayed(), True)
 
     def test_LearnToRide(self):
         driver = self.driver
@@ -140,6 +147,13 @@ class HomePage(unittest.TestCase):
         log.debug("Open House: %s" % a)
         self.assertEqual("Open House", a)
 
+    def test_LaconiaMotorcycleWeek(self):
+        driver = self.driver
+        v = self.v
+        a = driver.find_element_by_css_selector(v["LaconiaMotorcycleWeek"]).get_attribute("textContent")
+        log.debug("Laconia Motorcycle Week: %s" % a)
+        self.assertEqual("Laconia Motorcycle Week", a)
+
     def test_Sturgis(self):
         driver = self.driver
         v = self.v
@@ -165,7 +179,7 @@ class HomePage(unittest.TestCase):
     def test_Racing(self):
         driver = self.driver
         v = self.v
-        a = driver.find_element_by_css_selector(v["InternationalMotorcycleShow"]).get_attribute("textContent")
+        a = driver.find_element_by_css_selector(v["Racing"]).get_attribute("textContent")
         log.debug("Racing: %s" % a)
         self.assertEqual("Racing", a)
 
@@ -865,7 +879,7 @@ class HomePage(unittest.TestCase):
         v = self.v
         a = driver.find_element_by_css_selector(v["FindADealer_R"]).text
         log.debug("Find A Dealer_R: %s" % a)
-        self.assertIn("Find A Dealer", a)
+        self.assertIn("FIND A DEALER", a)
 
         b = driver.find_element_by_css_selector(v["FindADealer_R"]).get_attribute("href")
         log.debug("FindADealer_R: %s" % b)
@@ -896,7 +910,7 @@ class HomePage(unittest.TestCase):
         d = driver.find_element_by_css_selector(v["TestRide_icon"]).is_displayed()
         self.assertIs(d, True)
 
-    def test_SignIn(self):
+    def test_SignIn_Login(self):
         """登陆界面测试
         1. 输入错误密码，提示异常
         2. 登陆成功"""
@@ -915,6 +929,93 @@ class HomePage(unittest.TestCase):
         WebDriverWait(driver, 30).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
                                                                           v["LoginForm"])))
 
+        # 输入错误的登陆信息
+        driver.find_element_by_id(v["LoginForm_Email_id"]).send_keys("test@123.com")
+        driver.find_element_by_id(v["LoginForm_Password_id"]).send_keys("123456")
+        driver.find_element_by_css_selector(v["LoginForm_Submit"]).click()
+        WebDriverWait(driver, 30).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
+                                                                          v["LoginForm_Errormsg"])))
+
+        # 输入正确的登陆信息
+        driver.find_element_by_id(v["LoginForm_Email_id"]).clear()
+        driver.find_element_by_id(v["LoginForm_Email_id"]).send_keys("xiang.zhang226@gmail.com")
+        driver.find_element_by_id(v["LoginForm_Password_id"]).clear()
+        driver.find_element_by_id(v["LoginForm_Password_id"]).send_keys("Heaven226!")
+        driver.find_element_by_css_selector(v["LoginForm_Submit"]).click()
+
+        WebDriverWait(driver, 10).until(ec.text_to_be_present_in_element((By.CSS_SELECTOR,
+                                                                          v["LoginText"]), "HI"))
+
+    def test_SignIn_Logout(self):
+        """登陆成功后，登出"""
+        driver = self.driver
+        v = self.v
+        a = driver.find_element_by_css_selector(v["SignIn"])
+        a.click()
+        WebDriverWait(driver, 10).until(ec.visibility_of_element_located((By.CSS_SELECTOR,
+                                                                          v["SignIn_dropdown"])))
+        b = driver.find_element_by_css_selector(v["SignOut"])
+        ActionChains(driver).click(b).perform()
+        WebDriverWait(driver, 120).until(ec.text_to_be_present_in_element((By.CSS_SELECTOR, v["LoginText"]),
+                                                                          "SIGN IN"))
+
+    def test_Search(self):
+        """搜索"""
+        driver = self.driver
+        v = self.v
+        a = driver.find_element_by_css_selector(v["Search"])
+        self.assertEqual(a.text, "SEARCH")
+
+        b = driver.find_element_by_css_selector(v["Search_icon"])
+        self.assertIs(b.is_displayed(), True)
+
+        # 搜索“Street”，跳转到搜索结果页面，然后点击返回首页
+        c = driver.find_element_by_name(v["SearchField_name"])
+        a.click()
+        d = driver.find_element_by_css_selector(v["SearchButton"])
+        WebDriverWait(driver, 30).until(ec.visibility_of_element_located((By.CSS_SELECTOR, v["QuickLinks"])))
+        c.send_keys("Street")
+        d.click()
+        WebDriverWait(driver, 60).until(ec.title_is("Street | Harley-Davidson Search"))
+
+        e = driver.find_element_by_css_selector(v["LogoHeader"])
+        e.click()
+        WebDriverWait(driver, 30).until(ec.title_is("Harley-Davidson USA"))
+
+    @tag(Tag.SMOKE)
+    def test_HeroMarquee(self):
+        """checkpoint: 1. 自动播放
+                       2. CTA button"""
+        driver = self.driver
+        v = self.v
+
+        # 自动播放
+        a = driver.find_element_by_css_selector(v["Video"])
+        log.debug("autoplay : %s" % a.get_attribute("autoplay"))
+        self.assertEqual(a.get_attribute("autoplay"), 'true')
+
+        # SeeLiveWire CTA
+        b = driver.find_element_by_css_selector(v["SeeLiveWire"])
+        log.debug("SeeLiveWire href : %s" % b.get_attribute("href"))
+        self.assertEqual(b.get_attribute("href"), "https://www.harley-davidson.com/us/en/"
+                                                  "motorcycles/future-vehicles/livewire.html")
+        self.assertEqual(b.get_attribute("target"), "_self")
+
+        c = driver.find_element_by_css_selector(v["SeeLiveWireLabel"])
+        log.debug("See LiveWire Label: %s" % c.get_attribute("textContent"))
+        self.assertEqual(c.get_attribute("textContent"), "See Livewire")
+
+        # PreOderNOW CTA
+        d = driver.find_element_by_css_selector(v["PreOrderNow"])
+        log.debug("PreOrderNow href: %s" % d.get_attribute("href"))
+        self.assertEqual(d.get_attribute("href"), "https://www.harley-davidson.com/us/en/"
+                                                  "motorcycles/future-vehicles/electric/dealer-locator.html")
+        self.assertEqual(d.get_attribute("target"), "_self")
+
+        e = driver.find_element_by_css_selector(v["PreOrderNowLabel"])
+        log.debug("Pre OrderNow Label: %s" % e.get_attribute("textContent"))
+        self.assertEqual(e.get_attribute("textContent"), "Pre-order now")
+
     @classmethod
     def tearDownClass(cls):
         cls.driver.quit()
@@ -922,5 +1023,3 @@ class HomePage(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
-
