@@ -12,13 +12,13 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.select import Select
 from Libs.driver import Driver
+from Libs.get_config import get_config
 
 
 class HomePage(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.config_path = r"C:\Users\glimmer.zhang\Documents\Python\HD Automation\config\home_page.json"
-        cls.s = GetSelector(cls.config_path)
+        cls.s = GetSelector(get_config("home_page.json"))
         cls.v = cls.s.get_selector()
         cls.driver = Driver.browser
         cls.browser = Login(cls.driver).login()
