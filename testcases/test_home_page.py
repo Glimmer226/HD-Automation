@@ -1,4 +1,6 @@
 # coding = utf-8
+""" Author: Glimmer.Zhang@mullenloweprofero.com
+    PROD Home Page test cases """
 import unittest
 from Libs.login import Login
 from selenium import webdriver
@@ -8,6 +10,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support.select import Select
+from Libs.driver import Driver
 
 
 class HomePage(unittest.TestCase):
@@ -16,7 +20,7 @@ class HomePage(unittest.TestCase):
         cls.config_path = r"C:\Users\glimmer.zhang\Documents\Python\HD Automation\config\home_page.json"
         cls.s = GetSelector(cls.config_path)
         cls.v = cls.s.get_selector()
-        cls.driver = webdriver.Chrome()
+        cls.driver = Driver.browser
         cls.browser = Login(cls.driver).login()
 
     def test_Logo(self):
@@ -889,8 +893,8 @@ class HomePage(unittest.TestCase):
         log.debug("Find A Dealer_R target: %s" % c)
         self.assertEqual("_self", c)
 
-        d = driver.find_element_by_css_selector(v["FindADealer_R_icon"]).is_displayed()
-        self.assertIs(d, True)
+        d = driver.find_element_by_css_selector(v["FindADealer_R_icon"])
+        self.assertIs(d.is_displayed(), True)
 
     def test_TestRide(self):
         driver = self.driver
@@ -982,7 +986,6 @@ class HomePage(unittest.TestCase):
         e.click()
         WebDriverWait(driver, 30).until(ec.title_is("Harley-Davidson USA"))
 
-    @tag(Tag.SMOKE)
     def test_HeroMarquee(self):
         """checkpoint: 1. 自动播放
                        2. CTA button"""
@@ -1015,6 +1018,249 @@ class HomePage(unittest.TestCase):
         e = driver.find_element_by_css_selector(v["PreOrderNowLabel"])
         log.debug("Pre OrderNow Label: %s" % e.get_attribute("textContent"))
         self.assertEqual(e.get_attribute("textContent"), "Pre-order now")
+
+    def test_SeeWhatsComing(self):
+        """Content CTA See What's Coming button"""
+        driver = self.driver
+        v = self.v
+        a = driver.find_element_by_css_selector(v["SeeWhatsComing"])
+        # CTA是否显示
+        self.assertIs(a.is_displayed(), True)
+
+        # 是否新窗口打开
+        log.debug("target: %s" % a.get_attribute("target"))
+        self.assertEqual(a.get_attribute("target"), "_self")
+
+        # CTA链接
+        log.debug("href: %s" % a.get_attribute("href"))
+        self.assertEqual(a.get_attribute("href"), "https://www.harley-davidson.com/us/en/"
+                                                  "about-us/more-roads.html#intcmp_HP-BB-MoreRoads")
+
+    def test_PromoCard_1(self):
+        """Promo Card component: card 1"""
+        driver = self.driver
+        v = self.v
+
+        # image1 left
+        image1 = driver.find_element_by_css_selector(v["PromoCard_image1"])
+        WebDriverWait(driver, 60).until(ec.presence_of_element_located((By.CSS_SELECTOR, v["PromoCard_image1"])))
+        driver.execute_script("arguments[0].scrollIntoView();", image1)
+        self.assertIs(image1.is_displayed(), True)
+
+        # image1 tag
+        image1_tag = driver.find_element_by_css_selector(v["PromoCard_image1_tag"])
+        log.debug("tag: %s" % image1_tag.get_attribute("textContent"))
+        self.assertEqual(image1_tag.get_attribute("textContent"), "Genuine Merchandise")
+
+        # image1 CTA
+        image1_cta = driver.find_element_by_css_selector(v["PromoCard_image1_CTA"])
+        log.debug("CTA: %s" % image1_cta.get_attribute("textContent"))
+        log.debug("href: %s" % image1_cta.get_attribute("href"))
+        self.assertEqual(image1_cta.get_attribute("textContent"), "Shop Now")
+        self.assertEqual(image1_cta.get_attribute("href"), "https://www.harley-davidson.com/store/shop/new-arrival"
+                                                           "?cm_sp=Desktop_HP-_-BB10-_-promo-_-MayNewArrivals")
+
+    def test_PromoCard_2(self):
+        """Promo Card component: card 2"""
+        driver = self.driver
+        v = self.v
+        # image2 middle
+        image2 = driver.find_element_by_css_selector(v["PromoCard_image2"])
+        WebDriverWait(driver, 60).until(ec.presence_of_element_located((By.CSS_SELECTOR, v["PromoCard_image2"])))
+        self.assertIs(image2.is_displayed(), True)
+
+        # image2 tag
+        image2_tag = driver.find_element_by_css_selector(v["PromoCard_image2_tag"])
+        log.debug("tag: %s" % image2_tag.get_attribute("textContent"))
+        self.assertEqual(image2_tag.get_attribute("textContent"), "H-D App")
+
+        # image2 CTA
+        image2_cta = driver.find_element_by_css_selector(v["PromoCard_image2_CTA"])
+        log.debug("CTA: %s" % image2_cta.get_attribute("textContent"))
+        log.debug("href: %s" % image2_cta.get_attribute("href"))
+        self.assertEqual(image2_cta.get_attribute("textContent"), "Learn More")
+        self.assertEqual(image2_cta.get_attribute("href"), "https://www.harley-davidson.com/us/en/explore/"
+                                                           "discover/harley-davidson-app.html")
+
+    def test_PromoCard_3(self):
+        """Promo Card component: card 3"""
+        driver = self.driver
+        v = self.v
+        # image3 right
+        image3 = driver.find_element_by_css_selector(v["PromoCard_image3"])
+        WebDriverWait(driver, 60).until(ec.presence_of_element_located((By.CSS_SELECTOR, v["PromoCard_image3"])))
+        self.assertIs(image3.is_displayed(), True)
+
+        # image3 tag
+        image3_tag = driver.find_element_by_css_selector(v["PromoCard_image3_tag"])
+        log.debug("tag: %s" % image3_tag.get_attribute("textContent"))
+        self.assertEqual(image3_tag.get_attribute("textContent"), "Parts & Accessories")
+
+        # image3 CTA
+        image3_cta = driver.find_element_by_css_selector(v["PromoCard_image3_CTA"])
+        log.debug("CTA: %s" % image3_cta.get_attribute("textContent"))
+        log.debug("href: %s" % image3_cta.get_attribute("href"))
+        self.assertEqual(image3_cta.get_attribute("textContent"), "Shop Lighting")
+        self.assertEqual(image3_cta.get_attribute("href"), "https://www.harley-davidson.com/shop/motorcycle-lights"
+                                                           "?cm_sp=Desktop_HP-_-BB10-_-promo-_-AprLighting")
+
+    def test_GlobalFooter_Title1(self):
+        """Global Footer: Stay In The Know"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["GlobalFooter_Title1"])
+        driver.execute_script("arguments[0].scrollIntoView();", a)
+        log.debug("title: %s" % a.text)
+        self.assertEqual(a.text, "STAY IN THE KNOW")
+
+    def test_GlobalFooter_Email(self):
+        """Global Footer: Sign Up For Email"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["GlobalFooter_Mail"])
+        log.debug("target: %s" % a.get_attribute("target"))
+        log.debug("href: %s" % a.get_attribute("href"))
+        self.assertEqual(a.get_attribute("target"), "_self")
+        self.assertEqual(a.get_attribute("href"), "https://www.harley-davidson.com/us/en/profile/"
+                                                  "email-subscribe-global.html")
+
+        b = driver.find_element_by_css_selector(v["GlobalFooter_Mail_Label"])
+        log.debug("text: %s" % b.text)
+        self.assertEqual(b.text, "SIGN UP FOR EMAIL")
+
+    def test_GlobalFooter_FaceBook(self):
+        """Global Footer: FaceBook icon"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["FaceBook"])
+        self.assertIs(a.is_displayed(), True)
+
+        log.debug("target: %s" % a.get_attribute("target"))
+        self.assertEqual(a.get_attribute("target"), "_blank")
+
+        log.debug("href: %s" % a.get_attribute("href"))
+        self.assertEqual(a.get_attribute("href"), "https://www.facebook.com/harley-davidson/")
+
+    def test_GlobalFooter_Twitter(self):
+        """Global Footer: Twitter icon"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["Twitter"])
+        self.assertIs(a.is_displayed(), True)
+
+        log.debug("target: %s" % a.get_attribute("target"))
+        self.assertEqual(a.get_attribute("target"), "_blank")
+
+        log.debug("href: %s" % a.get_attribute("href"))
+        self.assertEqual(a.get_attribute("href"), "https://twitter.com/harleydavidson")
+
+    def test_GlobalFooter_Instagram(self):
+        """Global Footer: Instagram icon"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["Instagram"])
+        self.assertIs(a.is_displayed(), True)
+
+        log.debug("target: %s" % a.get_attribute("target"))
+        self.assertEqual(a.get_attribute("target"), "_blank")
+
+        log.debug("href: %s" % a.get_attribute("href"))
+        self.assertEqual(a.get_attribute("href"), "https://www.instagram.com/harleydavidson")
+
+    def test_GlobalFooter_Youtube(self):
+        """Global Footer: Youtube icon"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["Youtube"])
+        self.assertIs(a.is_displayed(), True)
+
+        log.debug("target: %s" % a.get_attribute("target"))
+        self.assertEqual(a.get_attribute("target"), "_blank")
+
+        log.debug("href: %s" % a.get_attribute("href"))
+        self.assertEqual(a.get_attribute("href"), "http://www.youtube.com/harleydavidson")
+
+    def test_GlobalFooter_Pinterest(self):
+        """Global Footer: Pinterest icon"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["Pinterest"])
+        self.assertIs(a.is_displayed(), True)
+
+        log.debug("target: %s" % a.get_attribute("target"))
+        self.assertEqual(a.get_attribute("target"), "_blank")
+
+        log.debug("href: %s" % a.get_attribute("href"))
+        self.assertEqual(a.get_attribute("href"), "https://www.pinterest.com/harleydavidson/")
+
+    def test_GlobalFooter_Title2(self):
+        """Global Footer: About Us"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["GlobalFooter_Title2"])
+        self.assertIs(a.is_displayed(), True)
+
+        log.debug("text: %s" % a.text)
+        self.assertEqual(a.text, "ABOUT US")
+
+    def test_GlobalFooter_Title3(self):
+        """Global Footer: Resources"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["GlobalFooter_Title3"])
+        self.assertIs(a.is_displayed(), True)
+
+        log.debug("text: %s" % a.text)
+        self.assertEqual(a.text, "RESOURCES")
+
+    def test_GlobalFooter_Icon(self):
+        """Global Footer: Icon"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["GlobalFooter_Icon"])
+        self.assertIs(a.is_displayed(), True)
+
+    def test_GlobalFooter_Disclaimer(self):
+        """Global Footer: Disclaimer"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["GlobalFooter_Disclaimer"])
+
+        WebDriverWait(driver, 30).until(
+            ec.visibility_of_element_located((By.CSS_SELECTOR, v["GlobalFooter_Disclaimer"])))
+        a.click()
+        WebDriverWait(driver, 30).until(ec.visibility_of_element_located((By.CSS_SELECTOR, v["Disclaimer"])))
+
+        b = driver.find_element_by_css_selector(v["Disclaimer_button"])
+        driver.execute_script("arguments[0].scrollIntoView();", b)
+        self.assertIs(b.is_displayed(), True)
+
+        close = driver.find_element_by_css_selector(v["Disclaimer_Close"])
+        close.click()
+        WebDriverWait(driver, 30).until(ec.invisibility_of_element_located((By.CSS_SELECTOR, v["Disclaimer"])))
+
+    def test_GlobalFooter_SwitchCountries(self):
+        """Global Footer: Switch Countries"""
+        driver = self.driver
+        v = self.v
+
+        a = driver.find_element_by_css_selector(v["GlobalFooter_SwitchCountries"])
+        driver.execute_script("arguments[0].scrollIntoView();", a)
+
+        Select(a).select_by_value("/gb/en/")
+        WebDriverWait(driver, 60).until(ec.title_is("Harley-Davidson UK"))
+        log.debug("title: %s" % driver.title)
 
     @classmethod
     def tearDownClass(cls):
